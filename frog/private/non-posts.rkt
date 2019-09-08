@@ -74,9 +74,19 @@
              (define text (render-template path-to (path->string name) '()))
              (parse-markdown text)])
           enhance-body))
+    (define body (xexprs->string xs))
+    (define template-path (~> path
+                              (path-replace-extension "-template.html")
+                              abs->rel/src))
+    (define templated-body
+      (if (file-exists? (build-path (src-path) template-path))
+          (render-template
+           (src-path)
+           template-path
+           (hasheq 'content body))
+          body))
     (prn1 "Generating non-post ~a" (abs->rel/www dest-path))
-    (~> xs
-        xexprs->string
+    (~> templated-body
         (bodies->page #:title (make-title xs path)
                       #:description (xexprs->description xs)
                       #:uri-path uri-path)
