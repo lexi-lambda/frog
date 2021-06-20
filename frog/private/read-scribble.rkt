@@ -1,12 +1,8 @@
 #lang racket/base
 
-(require racket/contract/base
-         racket/contract/region
-         racket/file
-         racket/match
-         racket/pretty
-         rackjure/str
-         rackjure/threading
+(require racket/require
+         (multi-in racket (contract file format match pretty))
+         threading
          (only-in xml xexpr?)
          "html.rkt"
          "util.rkt"
@@ -86,7 +82,7 @@
           [`(blockquote ([class "SCodeFlow"]) . ,xs)
            `(div ([class "SCodeFlow"]) ,@xs)]
           [`(img ,(list-no-order `[src ,src] x ...))
-           `(img ([src ,(str img-uri "/" src)] ,@x))]
+           `(img ([src ,(~a img-uri "/" src)] ,@x))]
           ;; Scribble @title is rendered as <h2>, @section as <h3>,
           ;; and @subsection as <h4>, and so on. Hoist the headings up
           ;; to be consistent with the Markdown format sources.

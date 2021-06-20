@@ -16,7 +16,7 @@
           scribble/extract)
 
 @(define (grey . contents)
-   (elem #:style (style #f (list (color-property "grey")))
+   (elem #:style (style #f (list (color-property (list 127 127 127))))
          contents))
 
 @(define (comment . contents)
@@ -234,7 +234,7 @@ The @racketmodname[frog/config] language provides bindings from:
 @item{@racketmodname[racket/contract/base]}
 @item{@racketmodname[racket/contract/region]}
 @item{@racketmodname[xml/xexpr]}
-@item{@racketmodname[rackjure/threading]}
+@item{@racketmodname[threading]}
 @item{@racketmodname[frog/params]}
 @item{@racketmodname[frog/paths]}
 @item{@racketmodname[frog/enhance-body]}

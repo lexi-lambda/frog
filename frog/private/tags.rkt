@@ -1,13 +1,9 @@
 #lang racket/base
 
-(require net/uri-codec
-         racket/contract/base
-         racket/contract/region
-         racket/file
-         racket/match
-         racket/string
-         rackjure/str
-         rackjure/threading
+(require racket/require
+         net/uri-codec
+         (multi-in racket (contract format file match string))
+         threading
          (only-in markdown xexpr->string)
          "bodies-page.rkt"
          "feeds.rkt"
@@ -62,7 +58,7 @@
 (define (index-path-for-tag tag)
   (match tag
     ["all" (www/index-pathname)]
-    [_     (build-path (www/tags-path) (str (slug tag) ".html"))]))
+    [_     (build-path (www/tags-path) (~a (slug tag) ".html"))]))
 
 (define (index-uri-for-tag tag)
   (match tag
@@ -72,13 +68,13 @@
 (define (title-for-tag tag)
   (match tag
     ["all" (current-title)]
-    [_     (str "Posts tagged '" tag "'")]))
+    [_     (~a "Posts tagged '" tag "'")]))
 
 (define (atom-path-for-tag tag)
-  (build-path (www/feeds-path) (str (slug tag) ".atom.xml")))
+  (build-path (www/feeds-path) (~a (slug tag) ".atom.xml")))
 
 (define (rss-path-for-tag tag)
-  (build-path (www/feeds-path) (str (slug tag) ".rss.xml")))
+  (build-path (www/feeds-path) (~a (slug tag) ".rss.xml")))
 
 (define (write-index-pages xs    ;(listof post?) -> any
                            title ;string?
@@ -91,7 +87,7 @@
         [page-posts (in-slice (current-posts-per-page) xs)])
     (write-index-page page-posts
                       (cond [(zero? page-num) title]
-                            [else (str title " (page " (add1 page-num) ")")])
+                            [else (~a title " (page " (add1 page-num) ")")])
                       tag
                       feed
                       file
@@ -192,6 +188,6 @@
         [else (~> base-file             ;add "-<page>" suffix
                   (path-replace-suffix "")
                   path->string
-                  (str "-" (add1 page-num))
+                  (~a "-" (add1 page-num))
                   string->path
                   (path-replace-suffix ".html"))]))

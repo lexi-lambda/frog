@@ -1,11 +1,9 @@
 #lang racket/base
 
-(require net/uri-codec
-         racket/date
-         racket/match
-         racket/string
-         rackjure/str
-         rackjure/threading
+(require racket/require
+         net/uri-codec
+         (multi-in racket (date format match string))
+         threading
          (only-in markdown xexpr->string)
          "author.rkt"
          "params.rkt"
@@ -25,7 +23,7 @@
 ;;; atom
 
 (define (atom-feed-uri tag)
-  (canonical-uri (str "/feeds/" (slug tag) ".atom.xml")))
+  (canonical-uri (~a "/feeds/" (slug tag) ".atom.xml")))
 
 (define (write-atom-feed xs title tag of-uri-path file)
   (prn1 "Generating ~a" (abs->rel/www file))
@@ -37,7 +35,7 @@
    `(feed
      ([xmlns "http://www.w3.org/2005/Atom"]
       [xml:lang "en"])
-     (title ([type "text"]) ,(str (current-title) ": " title))
+     (title ([type "text"]) ,(~a (current-title) ": " title))
      (link ([rel "self"]
             [href ,(full-uri (canonical-uri (abs->rel/www file)))]))
      (link ([href ,(full-uri of-uri-path)]))
@@ -85,7 +83,7 @@
 ;;; rss
 
 (define (rss-feed-uri tag)
-  (canonical-uri (str "/feeds/" (slug tag) ".rss.xml")))
+  (canonical-uri (~a "/feeds/" (slug tag) ".rss.xml")))
 
 (define (write-rss-feed xs title tag of-uri-path file)
   (prn1 "Generating ~a" (abs->rel/www file))
@@ -97,8 +95,8 @@
    `(rss
      ([version "2.0"])
      (channel
-      (title ,(str (current-title) ": " title))
-      (description ,(str (current-title) ": " title))
+      (title ,(~a (current-title) ": " title))
+      (description ,(~a (current-title) ": " title))
       (link ,(full-uri of-uri-path))
       (lastBuildDate () ,updated)
       (pubDate ,updated)
@@ -157,7 +155,7 @@
                      (string->number day)
                      (string->number month)
                      (string->number year)
-                      0 0 #f 0))
+                     0 0 #f 0))
      (cond [zulu? d]
            [else (local->universal d)])]
     [other
@@ -177,17 +175,17 @@
 (define (date->rfc-822 d)
   (match d
     [(date sc mn hr dy mo yr wd yd dst? tzo)
-     (str (vector-ref DAYS wd) ", "
-          (2d dy) " " (vector-ref MONTHS (sub1 mo)) " " yr " "
-          (2d hr) ":" (2d mn) ":" (2d sc) " UT")]))
+     (~a (vector-ref DAYS wd) ", "
+         (2d dy) " " (vector-ref MONTHS (sub1 mo)) " " yr " "
+         (2d hr) ":" (2d mn) ":" (2d sc) " UT")]))
 
 (define (date->rfc-8601 d)
   (match d
     [(date sc mn hr dy mo yr wd yd dst? tzo)
-     (str yr "-" (2d mo) "-" (2d dy)
-          "T"
-          (2d hr) ":" (2d mn) ":" (2d sc)
-          "Z")]))
+     (~a yr "-" (2d mo) "-" (2d dy)
+         "T"
+         (2d hr) ":" (2d mn) ":" (2d sc)
+         "Z")]))
 
 (define (2d n)
   (cond [(< n 10) (format "0~a" n)]
@@ -272,8 +270,8 @@
 (define (urn uri-path)
   ;; Note that URNs have a more restricted syntax than URIs. Here we
   ;; just rely on `slug` to comply.
-  (str "urn:" (slug (current-scheme/host))
-       ":" (slug uri-path)))
+  (~a "urn:" (slug (current-scheme/host))
+      ":" (slug uri-path)))
 
 ;;; Feed analytics without FeedBurner
 
@@ -284,8 +282,8 @@
 ;; down GA, too, naturally we'll come up with something else for that,
 ;; too.)
 (define (full-uri/decorated uri-path #:source source #:medium medium)
-  (str (full-uri uri-path)
-       (cond [(current-decorate-feed-uris?)
-              (str "?" "utm_source=" (uri-encode (slug source))
-                   "&" "utm_medium=" (uri-encode (slug medium)))]
-             [else ""])))
+  (~a (full-uri uri-path)
+      (cond [(current-decorate-feed-uris?)
+             (~a "?" "utm_source=" (uri-encode (slug source))
+                 "&" "utm_medium=" (uri-encode (slug medium)))]
+            [else ""])))

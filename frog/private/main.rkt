@@ -1,19 +1,18 @@
 #lang racket/base
 
-(require racket/cmdline
-         racket/contract/base
-         racket/contract/region
-         racket/help
-         racket/file
-         racket/function
-         racket/match
-         racket/path ;moved to racket/base only as of Racket 6
-         racket/runtime-path
-         racket/set
-         racket/vector
-         rackjure/threading
-         web-server/dispatchers/dispatch
-         web-server/servlet-env
+(require racket/require
+         (multi-in racket (cmdline
+                           contract/base
+                           contract/region
+                           help
+                           file
+                           function
+                           match
+                           set
+                           vector))
+         threading
+         (multi-in web-server (dispatchers/dispatch
+                               servlet-env))
          (except-in xml xexpr->string)
          (only-in find-parent-dir find-parent-containing)
          "bodies-page.rkt"
@@ -30,6 +29,7 @@
          "tags.rkt"
          (except-in "util.rkt" path-get-extension)
          "verbosity.rkt"
+         "version.rkt"
          "watch-dir.rkt")
 
 (provide main
@@ -172,15 +172,6 @@
                    (try ".frogrc"))])
         (and x (simplify-path x)))
       (current-directory)))
-
-(define-runtime-path info.rkt "../../info.rkt")
-(define (frog-version)
-  ;; Because (require "../info.rkt") (#%info-lookup version) errors in
-  ;; some cases with Racket 6, resort to regexp-ing info.rkt as text.
-  (match (file->string info.rkt #:mode 'text)
-    [(pregexp "^#lang info\n+\\(define version \"([^\"]+)\""
-              (list _ v))
-     v]))
 
 (define (init-project)
   (define (copy path)

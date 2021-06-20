@@ -1,11 +1,9 @@
 #lang racket/base
 
-(require file/md5
-         racket/contract/base
-         racket/contract/region
-         racket/file
-         racket/function
-         rackjure/threading)
+(require racket/require
+         file/md5
+         (multi-in racket (contract file function))
+         threading)
 
 (provide watch-directory
          checksum-path

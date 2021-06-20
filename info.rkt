@@ -1,16 +1,16 @@
 #lang info
 (define version "0.30")
 (define collection 'multi)
-(define deps '(["base" #:version "6.2"]
+(define deps '(["base" #:version "6.3"]
                "find-parent-dir"
                "html-lib"
                ["markdown" #:version "0.25"]
                "racket-index"
-               ["rackjure" #:version "0.9"]
                "reprovide-lang"
                "scribble-lib"
                "scribble-text-lib"
                "srfi-lite-lib"
+               "threading-lib"
                "web-server-lib"))
 (define build-deps '("at-exp-lib"
                      "net-doc"
@@ -18,5 +18,6 @@
                      "rackunit-lib"
                      "scribble-doc"
                      "scribble-text-lib"
+                     "threading-doc"
                      "web-server-doc"))
 (define test-omit-paths '("example/"))

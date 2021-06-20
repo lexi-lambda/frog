@@ -1,12 +1,8 @@
 #lang at-exp racket/base
 
-(require racket/contract/base
-         racket/contract/region
-         racket/date
-         racket/format
-         racket/system
-         rackjure/str
-         rackjure/threading
+(require racket/require
+         (multi-in racket (contract date format system))
+         threading
          "params.rkt"
          "paths.rkt"
          (only-in "util.rkt" display-to-file*))
@@ -24,10 +20,10 @@
       (parameterize ([date-display-format 'iso-8601])
         (values (date->string now #f)
                 (date->string now #t)))))
-  (define filename (str date-only-str
-                        "-"
-                        (~> title string-downcase slug)
-                        extension))
+  (define filename (~a date-only-str
+                       "-"
+                       (~> title string-downcase slug)
+                       extension))
   (define pathname (build-path (src/posts-path) filename))
   (cond [(file-exists? pathname)
          (unless and-edit?
